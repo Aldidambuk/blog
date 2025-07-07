@@ -11,8 +11,14 @@ Route::get('/', function () {
 
 Route::get('/posts', function () {
     // $posts = Post::with(['author', 'category'])->latest()->get();
-    $posts = post::latest()->get();
-    return view('posts', ['title' => 'Blog', 'posts' => $posts]);
+    $posts = post::latest();
+
+    if(request('search')){
+        // fungsi keyword untuk menulis pencarian 
+        $posts->where('title', 'like', '%' . request('search') . '%');
+    }
+
+    return view('posts', ['title' => 'Blog', 'posts' => $posts->get()]);
 });
 route::get('/posts/{post:slug}', function(post $post){
             return view('post',['title' => 'single post', 'post' => $post]);
