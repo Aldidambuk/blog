@@ -10,29 +10,15 @@ Route::get('/', function () {
 });
 
 Route::get('/posts', function () {
-    // $posts = Post::with(['author', 'category'])->latest()->get();
-    $posts = post::latest();
-
-    if(request('search')){
-        // fungsi keyword untuk menulis pencarian 
-        $posts->where('title', 'like', '%' . request('search') . '%');
-    }
-
-    return view('posts', ['title' => 'Blog', 'posts' => $posts->get()]);
+    // fungsi untuk search, category, author, dan pagination untuk pindah halaman post 
+    // dan withQueryString untuk tetap berada di halaman atau rute kita masuk atau klik(misal di category web programing)
+    $posts = post::latest()->Filter(request(['search','category','author']))->paginate(5)->withQueryString();
+    return view('posts', ['title' => 'Blog', 'posts' => $posts]);
 });
 route::get('/posts/{post:slug}', function(post $post){
             return view('post',['title' => 'single post', 'post' => $post]);
 });
 
-Route::get('/authors/{user:username}', function (User $user) {
-    // $posts = $user->posts->load('category','author');
-    return view('posts', ['title' => count($user->posts) . ' Article by. ' . $user->name, 'posts' => $user->posts]);
-});
-
-Route::get('/categories/{category:slug}', function (Category $category) {
-    // $posts = $category->posts->load('category','author');
-    return view('posts', ['title' => 'category:  ' . $category->name, 'posts' => $category->posts]);
-});
 
 Route::get('/About', function () {
     return view('About', ['title' => 'About']);

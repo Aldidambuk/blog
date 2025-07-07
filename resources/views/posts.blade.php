@@ -22,6 +22,17 @@
     <div class="py-4 px-4 mx-auto max-w-screen-xl lg:px-6">
         {{-- star form search --}}
         <form class="mb-8 max-w-md mx-auto">
+            {{-- start fungsi input untuk search category --}}
+            @if (request('category'))
+                <input type="hidden" name="category" value="{{ request('category') }}">
+            @endif
+            {{-- end --}}
+
+            {{-- start fungsi input untuk search author --}}
+            @if (request('author'))
+                <input type="hidden" name="author" value="{{ request('author') }}">
+            @endif
+            {{-- end --}}
             <label for="default-search"
                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
             <div class="relative">
@@ -41,12 +52,14 @@
         </form>
         {{-- end form search --}}
 
-        <div class="grid gap-8 lg:grid-cols-3 md:grid-cols-2">
-            @foreach ($posts as $post)
+        {{ $posts->links() }}
+
+        <div class="mt-4 grid gap-8 lg:grid-cols-3 md:grid-cols-2">
+            @forelse ($posts as $post)
                 <article
                     class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                     <div class="flex justify-between items-center mb-5 text-gray-500">
-                        <a href="/categories/{{ $post->category->slug }}">
+                        <a href="/posts?category={{ $post->category->slug }}">
                             <span
                                 class="{{ $post->category->color }} text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
                                 {{ $post->category->name }}
@@ -58,7 +71,7 @@
                             href="/posts/{{ $post['slug'] }}">{{ $post['title'] }}</a></h2>
                     <p class="mb-5 font-light text-gray-500 dark:text-gray-400">{{ Str::limit($post->body, 50) }}</p>
                     <div class="flex justify-between items-center">
-                        <a href="/authors/{{ $post->author->username }}">
+                        <a href="/posts?author={{ $post->author->username }}">
                             <div class="flex items-center space-x-4">
                                 <img class="w-7 h-7 rounded-full"
                                     src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
@@ -80,7 +93,12 @@
                         </a>
                     </div>
                 </article>
-            @endforeach
+            @empty
+                <div>
+                    <p class="font-semibold text-xl my-4">Article note found!</p>
+                    <a href="/posts" class="block text-blue-500 hover:underline">&laquo; Back To All Posts</a>
+                </div>
+            @endforelse
         </div>
     </div>
 
